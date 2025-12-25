@@ -95,6 +95,17 @@ function reply(email, reply_all = false) {
   let editor = props.emailBox.editor
   let message = email.content
   let recipients = email.recipients.split(',').map((r) => r.trim())
+  
+  // Set sender if available in emailBox options
+  // This assumes emailBox will be updated to include sender options
+  if (props.emailBox.senderOptions?.length) {
+     // If the email was sent to one of our accounts, try to reply from that account
+     const matchingAccount = props.emailBox.senderOptions.find(opt => 
+       email.recipients.includes(opt.value) || email.cc?.includes(opt.value)
+     )
+     editor.sender = matchingAccount ? matchingAccount.value : props.emailBox.senderOptions[0].value
+  }
+
   editor.toEmails = [email.sender]
   editor.cc = editor.bcc = false
   editor.ccEmails = []
