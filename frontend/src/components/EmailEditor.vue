@@ -18,16 +18,7 @@
   >
     <template #top>
       <div class="flex flex-col gap-3">
-          <div v-if="senderOptions?.length > 1" class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
-            <span class="text-xs text-ink-gray-4">{{ __('FROM') }}:</span>
-            <SingleSelectEmailInput
-              class="flex-1"
-              variant="ghost"
-              v-model="sender"
-              :options="senderOptions"
-            />
-          </div>
-          <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
+        <div class="sm:mx-10 mx-4 flex items-center gap-2 border-t pt-2.5">
           <span class="text-xs text-ink-gray-4">{{ __('TO') }}:</span>
           <MultiSelectEmailInput
             class="flex-1"
@@ -188,11 +179,9 @@ import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
-import SingleSelectEmailInput from '@/components/Controls/SingleSelectEmailInput.vue'
 import MultiSelectEmailInput from '@/components/Controls/MultiSelectEmailInput.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
-import { createResource, TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
-import { usersStore } from '@/stores/users'
+import { TextEditorBubbleMenu, TextEditor, FileUploader, call } from 'frappe-ui'
 import { capture } from '@/telemetry'
 import { validateEmail } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -264,33 +253,6 @@ const bccEmails = ref([])
 const ccInput = ref(null)
 const bccInput = ref(null)
 
-const { getUser } = usersStore()
-const sender = ref(getUser().email)
-
-const userEmailAccounts = createResource({
-  url: 'crm.api.email.get_user_email_accounts',
-  auto: true,
-})
-
-const senderOptions = computed(() => {
-  let options = [
-    {
-      label: `${getUser().full_name} <${getUser().email}>`,
-      value: getUser().email,
-    },
-  ]
-
-  if (userEmailAccounts.data) {
-    options.push(
-      ...userEmailAccounts.data.map((account) => ({
-        label: `${account.name} <${account.email_id}>`,
-        value: account.email_id,
-      })),
-    )
-  }
-  return options
-})
-
 const editor = computed(() => {
   return textEditor.value.editor
 })
@@ -347,8 +309,6 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
-  sender,
-  senderOptions,
 })
 
 const textEditorMenuButtons = [
